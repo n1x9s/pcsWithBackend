@@ -24,7 +24,7 @@ async def create_product(product: SProduct):
     return await ProductsDAO.create(**product.dict())
 
 
-@router.put("/{id}")
+@router.put("/update/{id}")
 async def update_product(id: int, name: str, description: str, price: int, image_url: str):
     return await ProductsDAO.update(id, name=name, description=description, price=price, image_url=image_url)
 
