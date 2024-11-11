@@ -27,3 +27,8 @@ async def create_product(product: SProduct):
 @router.put("/{id}")
 async def update_product(id: int, name: str, description: str, price: int, image_url: str):
     return await ProductsDAO.update(id, name=name, description=description, price=price, image_url=image_url)
+
+
+@router.delete("/delete/{id}")
+async def delete_product(id: int):
+    return await ProductsDAO.delete(id)
