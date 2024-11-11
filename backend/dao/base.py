@@ -10,7 +10,7 @@ class BaseDAO:
     @classmethod
     async def create(cls, **data):
         try:
-            query = insert(cls.model).values(**data).returning(cls.model.id)
+            query = insert(cls.model).values(**data)
             async with async_session_maker() as session:
                 result = await session.execute(query)
                 await session.commit()
