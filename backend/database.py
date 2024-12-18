@@ -1,17 +1,18 @@
-import os
-from dotenv import load_dotenv
-
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy import NullPool
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
-load_dotenv()
+from backend.config import settings
 
-database_url = f"postgresql+asyncpg://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
 
-engine = create_async_engine(database_url)
+DATABASE_URL = settings.DATABASE_URL
+DATABASE_PARAMS = {}
 
-async_session_maker = async_sessionmaker(engine)
+engine = create_async_engine(DATABASE_URL, **DATABASE_PARAMS)
 
+# Во 2.0 версии Алхимии был добавлен async_sessionamaker.
+async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 class Base(DeclarativeBase):
     pass

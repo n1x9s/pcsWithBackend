@@ -1,12 +1,19 @@
+// frontend/lib/api_service.dart
 import 'package:dio/dio.dart';
 import 'product_model.dart';
 
 class ApiService {
   final Dio _dio = Dio();
 
-  Future<List<Product>> getProducts() async {
+  Future<List<Product>> getProducts({String? search, String? sortBy}) async {
     try {
-      final response = await _dio.get('http://127.0.0.1:8000/products/');
+      final response = await _dio.get(
+        'http://127.0.0.1:8000/products/',
+        queryParameters: {
+          if (search != null) 'search': search,
+          if (sortBy != null) 'sort_by': sortBy,
+        },
+      );
       if (response.statusCode == 200) {
         List<Product> products = (response.data as List)
             .map((product) => Product.fromJson(product))
