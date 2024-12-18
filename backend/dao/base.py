@@ -93,4 +93,17 @@ class BaseDAO:
 
             return None
 
-
+    @classmethod
+    async def purchase_product(cls, product_id: int):
+        try:
+            async with async_session_maker() as session:
+                stmt = delete(cls.model).where(cls.model.id == product_id)
+                await session.execute(stmt)
+                await session.commit()
+                return {"status": "success", "message": "Product purchased and deleted successfully"}
+        except (SQLAlchemyError, Exception) as e:
+            if isinstance(e, SQLAlchemyError):
+                msg = "Database Exc: Cannot delete product"
+            elif isinstance(e, Exception):
+                msg = "Unknown Exc: Cannot delete product"
+            return {"status": "error", "message": msg}

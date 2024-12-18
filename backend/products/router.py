@@ -1,6 +1,6 @@
 from typing import Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, HTTPException
 
 from backend.products.dao import ProductsDAO
 from backend.products.schemas import SProduct
@@ -13,8 +13,8 @@ router = APIRouter(
 
 @router.get("/")
 async def get_products(
-    search: Optional[str] = Query(None, description="Поиск по названию продукта"),
-    sort_by: Optional[str] = Query(None, description="Сортировка по цене: 'asc' или 'desc'")
+        search: Optional[str] = Query(None, description="Поиск по названию продукта"),
+        sort_by: Optional[str] = Query(None, description="Сортировка по цене: 'asc' или 'desc'")
 ):
     return await ProductsDAO.get_all(search=search, sort_by=sort_by)
 
@@ -37,3 +37,11 @@ async def update_product(id: int, name: str, description: str, price: int, image
 @router.delete("/delete/{id}")
 async def delete_product(id: int):
     return await ProductsDAO.delete(id)
+
+
+@router.post("/purchase/{id}")
+async def purchase_product(id: int):
+    result = await ProductsDAO.purchase_product(id)
+    if result["status"] == "error":
+        raise HTTPException(status_code=400, detail=result["message"])
+    return result
