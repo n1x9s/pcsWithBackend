@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from typing import Optional
+
+from fastapi import APIRouter, Query
 
 from backend.products.dao import ProductsDAO
 from backend.products.schemas import SProduct
@@ -10,8 +12,11 @@ router = APIRouter(
 
 
 @router.get("/")
-async def get_products():
-    return await ProductsDAO.get_all()
+async def get_products(
+    search: Optional[str] = Query(None, description="Поиск по названию продукта"),
+    sort_by: Optional[str] = Query(None, description="Сортировка по цене: 'asc' или 'desc'")
+):
+    return await ProductsDAO.get_all(search=search, sort_by=sort_by)
 
 
 @router.get("/{id}")

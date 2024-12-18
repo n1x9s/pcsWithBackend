@@ -1,7 +1,11 @@
+from typing import Optional
+
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import select, insert, update, delete, asc, desc
+from sqlalchemy.ext.asyncio import async_session
 
 from backend.database import async_session_maker
+from backend.products.models import Products
 
 
 class BaseDAO:
@@ -23,10 +27,17 @@ class BaseDAO:
             return None
 
     @classmethod
-    async def get_all(cls):
+    async def get_all(cls, search: Optional[str] = None, sort_by: Optional[str] = None):
         async with async_session_maker() as session:
-            stmt = select(cls.model)
-            result = await session.execute(stmt)
+            query = select(Products)
+            if search:
+                query = query.where(Products.name.ilike(f"%{search}%"))
+            if sort_by:
+                if sort_by == "asc":
+                    query = query.order_by(asc(Products.price))
+                elif sort_by == "desc":
+                    query = query.order_by(desc(Products.price))
+            result = await session.execute(query)
             return result.scalars().all()
 
     @classmethod
