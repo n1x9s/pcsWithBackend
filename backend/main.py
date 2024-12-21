@@ -6,6 +6,7 @@ from backend.database import engine
 from backend.products.router import router as products_router
 from backend.images.router import router as images_router
 from backend.users.router import router_auth, router_users
+from backend.chat.router import router as chat_router
 from sqladmin import Admin
 app = FastAPI()
 
@@ -27,6 +28,8 @@ app.include_router(products_router)
 app.include_router(images_router)
 app.include_router(router_auth)
 app.include_router(router_users)
+app.include_router(chat_router)
+
 admin.add_view(ProductsAdmin)
 
 

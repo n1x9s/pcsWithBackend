@@ -107,3 +107,10 @@ class BaseDAO:
             elif isinstance(e, Exception):
                 msg = "Unknown Exc: Cannot delete product"
             return {"status": "error", "message": msg}
+
+    @classmethod
+    async def get_user_by_id(cls, user_id: int):
+        async with async_session_maker() as session:
+            stmt = select(cls.model).where(cls.model.id == user_id)
+            result = await session.execute(stmt)
+            return result.scalars().first()

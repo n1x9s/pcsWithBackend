@@ -1,9 +1,11 @@
 from typing import Optional
 
-from fastapi import APIRouter, Query, HTTPException
+from fastapi import APIRouter, Query, HTTPException, status, Depends
 
 from backend.products.dao import ProductsDAO
 from backend.products.schemas import SProduct
+from backend.users.dependencies import get_current_user
+from backend.users.models import Users
 
 router = APIRouter(
     prefix="/products",
@@ -25,7 +27,12 @@ async def get_product(id: int):
 
 
 @router.post("/create")
-async def create_product(product: SProduct):
+async def create_product(product: SProduct, current_user: Users = Depends(get_current_user)):
+    if current_user.email != "prodavec@gmail.com":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to add products"
+        )
     return await ProductsDAO.create(**product.dict())
 
 
