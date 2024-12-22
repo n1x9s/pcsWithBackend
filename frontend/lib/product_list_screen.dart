@@ -1,16 +1,18 @@
-// frontend/lib/product_list_screen.dart
 import 'package:flutter/material.dart';
 import 'api_service.dart';
 import 'product_model.dart';
-import 'search_results_screen.dart';
+import 'chat_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
+  final ApiService apiService;
+
+  ProductListScreen({required this.apiService});
+
   @override
   _ProductListScreenState createState() => _ProductListScreenState();
 }
 
 class _ProductListScreenState extends State<ProductListScreen> {
-  final ApiService _apiService = ApiService();
   String? _searchQuery;
   String? _sortBy;
   final TextEditingController _searchController = TextEditingController();
@@ -21,19 +23,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
     });
   }
 
-  void _onSortChanged(String? sortBy) {
-    setState(() {
-      _sortBy = sortBy;
-    });
-  }
-
-  void _navigateToSearch() {
+  void _navigateToChat() {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SearchResultsScreen(
-          searchQuery: _searchController.text,
-          sortBy: _sortBy,
+        builder: (context) => ChatScreen(
+          apiService: widget.apiService,
+          otherUserId: 1, // ID продавца
+          otherUserName: 'Seller', // Имя продавца
         ),
       ),
     );
@@ -46,21 +43,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
         title: Text('Products'),
         actions: [
           IconButton(
-            icon: Icon(Icons.search),
-            onPressed: _navigateToSearch,
-          ),
-          PopupMenuButton<String>(
-            onSelected: _onSortChanged,
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'price_asc',
-                child: Text('Sort by Price (Asc)'),
-              ),
-              PopupMenuItem(
-                value: 'price_desc',
-                child: Text('Sort by Price (Desc)'),
-              ),
-            ],
+            icon: Icon(Icons.chat),
+            onPressed: _navigateToChat,
           ),
         ],
       ),
@@ -74,14 +58,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 labelText: 'Enter product name',
                 border: OutlineInputBorder(),
               ),
+              onChanged: _onSearchChanged,
             ),
           ),
           Expanded(
             child: FutureBuilder<List<Product>>(
-              future: _apiService.getProducts(
-                search: _searchQuery,
-                sortBy: _sortBy,
-              ),
+              future: widget.apiService.getProducts(search: _searchQuery),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
