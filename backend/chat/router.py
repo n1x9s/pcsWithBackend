@@ -14,14 +14,15 @@ router = APIRouter(
 )
 
 
-@router.post("/send", response_model=SChatMessageResponse)
-async def send_message(message: SChatMessage, current_user: Users = Depends(get_current_user)):
-    if current_user.email != "prodavec@gmail.com" and message.receiver_id != "prodavec@gmail.com":
+@router.post("/send/{receiver_id}", response_model=SChatMessageResponse)
+async def send_message(receiver_id: int, message: SChatMessage, current_user: Users = Depends(get_current_user)):
+    if current_user.email != "prodavec@gmail.com" and receiver_id == "prodavec@gmail.com":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You can only send messages to the seller"
         )
-    return await ChatDAO.create_message(current_user.id, message.receiver_id, message.message)
+    return await ChatDAO.create_message(current_user.id, receiver_id, message.message)
+
 
 @router.get("/messages/{other_user_id}", response_model=List[SChatMessageResponse])
 async def get_messages(other_user_id: int, current_user: Users = Depends(get_current_user)):
