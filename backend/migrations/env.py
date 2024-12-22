@@ -13,6 +13,7 @@ from backend.config import settings
 from backend.database import Base
 from backend.products.models import Products
 from backend.users.models import Users
+from backend.chat.models import ChatMessage
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

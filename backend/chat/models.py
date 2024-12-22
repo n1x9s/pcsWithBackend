@@ -14,5 +14,8 @@ class ChatMessage(Base):
     message = Column(String, nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
-    sender = relationship("Users", foreign_keys=[Column("sender_id", Integer, ForeignKey("users.id"))])
-    receiver = relationship("Users", foreign_keys=[Column("receiver_id", Integer, ForeignKey("users.id"))])
+    sender = relationship("Users", foreign_keys=[sender_id])
+    receiver = relationship("Users", foreign_keys=[receiver_id])
+
+    def __str__(self):
+        return self.message
